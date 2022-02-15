@@ -1,0 +1,35 @@
+﻿
+@{
+    ViewData["Title"] = "Course Detail";
+}
+
+@model Course
+
+<dd class="col-sm-10">
+   <h3>@Html.DisplayFor(model => model.Title)</h3> 
+</dd>
+
+ <dt class="col-sm-2">
+    @Html.DisplayNameFor(model => model.subjects)
+</dt>
+<dd class="col-sm-10">
+    <table class="table">
+        <tr>
+            <th>ID</th>
+            <th>Subject Name</th>
+        </tr>
+        @foreach (var item in Model.subjects)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SubjectTitle)
+                </td>
+            </tr>
+          
+        }
+    </table>
+</dd>
+<a asp-controller="Course" asp-action="Index" class="btn btn-secondary" style="width:150px;">Back to List</a>
