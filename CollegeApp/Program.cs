@@ -1,41 +1,21 @@
-using CollegeApp.Data;
-using CollegeApp.Models;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+// Unused usings removed.
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(
-    builder.Configuration.GetConnectionString("DefaultConnection")
-    ));
-
-var app = builder.Build();
-/* //SEEDER
-using (var scope = app.Services.CreateScope())
+namespace CollegeApp
 {
-    var services = scope.ServiceProvider;
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            CreateHostBuilder(args).Build().Run();
+        }
 
-    SeedData.Initialize(services);
+        public static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseStartup<Startup>();
+                });
+    }
 }
-*/
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-
-app.UseAuthorization();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-app.Run();

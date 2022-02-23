@@ -20,7 +20,7 @@ namespace CollegeApp.Migrations
                 .HasAnnotation("ProductVersion", "6.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
+            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, (int)1L, 1);
 
             modelBuilder.Entity("CollegeApp.Models.Course", b =>
                 {
@@ -28,7 +28,7 @@ namespace CollegeApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), (int)1L, 1);
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -45,7 +45,7 @@ namespace CollegeApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GradeId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GradeId"), (int)1L, 1);
 
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
@@ -67,7 +67,7 @@ namespace CollegeApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), (int)1L, 1);
 
                     b.Property<DateTime>("Birthday")
                         .HasColumnType("datetime2");
@@ -90,7 +90,7 @@ namespace CollegeApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), (int)1L, 1);
 
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
@@ -117,7 +117,7 @@ namespace CollegeApp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TeacherId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TeacherId"), (int)1L, 1);
 
                     b.Property<DateTime?>("Birthday")
                         .HasColumnType("datetime2");
