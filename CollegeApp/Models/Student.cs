@@ -16,10 +16,11 @@ namespace CollegeApp.Models
 
 
         //Relationships
-       
+
+        public virtual ICollection<Subject>? Subjects { get; set; }
         public virtual ICollection<Grade>? Grades { get; set; }
-        
-        public ICollection<Subject>? Subjects { get; set; }
-        
+
+
+
     }
 }

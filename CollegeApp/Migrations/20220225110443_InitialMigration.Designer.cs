@@ -7,30 +7,26 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-#nullable disable
-
 namespace CollegeApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220214145420_InitialMigration")]
+    [Migration("20220225110443_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.2")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
-
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, (int)1L, 1);
+                .HasAnnotation("Relational:MaxIdentifierLength", 128)
+                .HasAnnotation("ProductVersion", "5.0.14")
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("CollegeApp.Models.Course", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), (int)1L, 1);
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -45,9 +41,8 @@ namespace CollegeApp.Migrations
                 {
                     b.Property<int>("GradeId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GradeId"), (int)1L, 1);
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("StudentId")
                         .HasColumnType("int");
@@ -67,9 +62,8 @@ namespace CollegeApp.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), (int)1L, 1);
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("Birthday")
                         .HasColumnType("datetime2");
@@ -83,6 +77,8 @@ namespace CollegeApp.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("GradeId");
+
                     b.ToTable("Students");
                 });
 
@@ -90,9 +86,8 @@ namespace CollegeApp.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), (int)1L, 1);
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
@@ -117,9 +112,8 @@ namespace CollegeApp.Migrations
                 {
                     b.Property<int>("TeacherId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TeacherId"), (int)1L, 1);
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime?>("Birthday")
                         .HasColumnType("datetime2");
@@ -143,21 +137,6 @@ namespace CollegeApp.Migrations
                     b.ToTable("Teachers");
                 });
 
-            modelBuilder.Entity("GradeStudent", b =>
-                {
-                    b.Property<int>("GradesGradeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("studentsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("GradesGradeId", "studentsId");
-
-                    b.HasIndex("studentsId");
-
-                    b.ToTable("GradeStudent");
-                });
-
             modelBuilder.Entity("StudentSubject", b =>
                 {
                     b.Property<int>("StudentsId")
@@ -171,6 +150,13 @@ namespace CollegeApp.Migrations
                     b.HasIndex("SubjectsId");
 
                     b.ToTable("StudentSubject");
+                });
+
+            modelBuilder.Entity("CollegeApp.Models.Student", b =>
+                {
+                    b.HasOne("CollegeApp.Models.Grade", null)
+                        .WithMany("students")
+                        .HasForeignKey("GradeId");
                 });
 
             modelBuilder.Entity("CollegeApp.Models.Subject", b =>
@@ -197,21 +183,6 @@ namespace CollegeApp.Migrations
                     b.Navigation("Subject");
                 });
 
-            modelBuilder.Entity("GradeStudent", b =>
-                {
-                    b.HasOne("CollegeApp.Models.Grade", null)
-                        .WithMany()
-                        .HasForeignKey("GradesGradeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CollegeApp.Models.Student", null)
-                        .WithMany()
-                        .HasForeignKey("studentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("StudentSubject", b =>
                 {
                     b.HasOne("CollegeApp.Models.Student", null)
@@ -234,6 +205,8 @@ namespace CollegeApp.Migrations
 
             modelBuilder.Entity("CollegeApp.Models.Grade", b =>
                 {
+                    b.Navigation("students");
+
                     b.Navigation("subjects");
                 });
 

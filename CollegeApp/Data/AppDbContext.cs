@@ -16,8 +16,14 @@ namespace CollegeApp.Data
         public DbSet<Teacher> Teachers { get; set; }
         public DbSet<Grade> Grades { get; set; }
 
+       
 
-        
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            
+        }
+
 
     }
 }

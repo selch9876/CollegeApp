@@ -1,8 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-#nullable disable
-
 namespace CollegeApp.Migrations
 {
     public partial class InitialMigration : Migration
@@ -50,6 +48,12 @@ namespace CollegeApp.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Students", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Students_Grades_GradeId",
+                        column: x => x.GradeId,
+                        principalTable: "Grades",
+                        principalColumn: "GradeId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -75,31 +79,8 @@ namespace CollegeApp.Migrations
                         name: "FK_Subjects_Grades_GradeId",
                         column: x => x.GradeId,
                         principalTable: "Grades",
-                        principalColumn: "GradeId");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "GradeStudent",
-                columns: table => new
-                {
-                    GradesGradeId = table.Column<int>(type: "int", nullable: false),
-                    studentsId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GradeStudent", x => new { x.GradesGradeId, x.studentsId });
-                    table.ForeignKey(
-                        name: "FK_GradeStudent_Grades_GradesGradeId",
-                        column: x => x.GradesGradeId,
-                        principalTable: "Grades",
                         principalColumn: "GradeId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_GradeStudent_Students_studentsId",
-                        column: x => x.studentsId,
-                        principalTable: "Students",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -144,13 +125,14 @@ namespace CollegeApp.Migrations
                         name: "FK_Teachers_Subjects_SubjectID",
                         column: x => x.SubjectID,
                         principalTable: "Subjects",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_GradeStudent_studentsId",
-                table: "GradeStudent",
-                column: "studentsId");
+                name: "IX_Students_GradeId",
+                table: "Students",
+                column: "GradeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StudentSubject_SubjectsId",
@@ -177,9 +159,6 @@ namespace CollegeApp.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "GradeStudent");
-
             migrationBuilder.DropTable(
                 name: "StudentSubject");
 

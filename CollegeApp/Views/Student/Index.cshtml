@@ -1,4 +1,4 @@
-﻿@model IEnumerable<CollegeApp.Models.Student>
+﻿@model ContosoUniversity.ViewModels.StudentIndexData
 
 @{
     ViewData["Title"] = "Students";
@@ -27,7 +27,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in Model)
+        @foreach (var item in Model.Students)
         {
             <tr>
                 <td>
@@ -37,11 +37,14 @@
                     @Html.DisplayFor(modelItem => item.StudentName)
                 </td>
                 <td>
-                    @foreach (var obj in item.Subjects)
+                    @{
+                        foreach (var subject in item.Subjects)
                         {
-                           <p>@obj.SubjectTitle</p>
+                            @subject.SubjectTitle <br />
                         }
+                    }
                 </td>
+
                 <td>
                     <a asp-controller="Student" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                     <a asp-controller="Student" asp-action="Details" asp-route-id="@item.Id">Details</a> |
@@ -51,3 +54,4 @@
         }
     </tbody>
 </table>
+

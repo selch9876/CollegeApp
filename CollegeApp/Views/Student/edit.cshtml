@@ -24,15 +24,38 @@
                 <input asp-for="Birthday" type="date" asp-format="{0:yyyy-MM-dd}" class="form-control" />
                 <span asp-validation-for="Birthday" class="text-danger"></span> 
              </div>
-            
-            
-            <div class="form-group mb-3">
-                <label asp-for="Subjects" class="control-label" >Subject</label>
-                <select asp-for="Subjects" class="form-control" asp-items="ViewBag.SubjectID" SelectionMode="multiple">
-                    <option value="">-- Select Subject --</option>
-                </select>
-                <span asp-validation-for="Subjects" class="text-danger" />
+             <div class="form-group mb-3">
+                <label  class="control-label" >Subject</label>
+                 <table>
+                    <tr>
+                    @{
+                        int cnt = 0;
+                        List<CollegeApp.ViewModels.EnrolledSubjectData> subjects = ViewBag.Subjects;
+                        foreach (var subject in subjects)
+                        {
+                            if (cnt++ % 3 == 0)
+                            {
+                                @:</tr><tr>
+                            }
+                            @:<td>
+                                <input type="checkbox"
+                                   name="selectedSubjects"
+                                   value="@subject.SubjectID"
+                                   @(Html.Raw(subject.Enrolled ? "checked=\"checked\"" : "")) />
+                                   @subject.SubjectID @:  @subject.SubjectTitle
+                            @:</td>
+                        }
+                        @:</tr>
+                    }
+                </table>
             </div>
+
+            <div class="mb-3">
+                <label asp-for="Grades">Grade</label>
+                <input asp-for="Grades" type="number" class="form-control" />
+                <span asp-validation-for="Grades" class="text-danger"></span>
+            </div>
+            
             <button type="submit" class="btn btn-primary" style="width:150px;">Edit Student</button>
             <a asp-controller="Student" asp-action="Index" class="btn btn-secondary" style="width:150px;">Back to List</a>
         </div>

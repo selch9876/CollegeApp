@@ -12,14 +12,16 @@ namespace CollegeApp.Models
         [Display(Name = "Subject Title")]
         public string? SubjectTitle { get; set; }
         public int CourseId { get; set; }
-        
+
 
 
         //Relationships
+        public virtual ICollection<Student>? Students { get; set; }
 
         public Course? Course { get; set; }
         public virtual Teacher? Teacher { get; set; }
-        
-        public virtual ICollection<Student>? Students { get; set; }
+        public virtual ICollection<Grade>? Grades { get; set; }
+
+
     }
 }
