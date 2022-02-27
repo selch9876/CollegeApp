@@ -18,7 +18,7 @@
                 <input asp-for="StudentName" type="text" class="form-control" />
                 <span asp-validation-for="StudentName" class="text-danger"></span>
             </div>
-            
+             
              <div class="mb-3">
                 <label asp-for="Birthday">Birthday</label>
                 <input asp-for="Birthday" type="date" asp-format="{0:yyyy-MM-dd}" class="form-control" />
@@ -44,18 +44,22 @@
                                    @(Html.Raw(subject.Enrolled ? "checked=\"checked\"" : "")) />
                                    @subject.SubjectID @:  @subject.SubjectTitle
                             @:</td>
+                               <input type="hidden" value="@subject.GradeId" name="gradeId" />
+                            @:<td>
+                                <input type="number"
+                                class="form-control"
+                                value="@subject.Grade"
+                                placeholder="@subject.Grade"
+                                   name="selectedGrade"
+                                   />
+                                     
+                            @:</td>
                         }
                         @:</tr>
                     }
                 </table>
             </div>
 
-            <div class="mb-3">
-                <label asp-for="Grades">Grade</label>
-                <input asp-for="Grades" type="number" class="form-control" />
-                <span asp-validation-for="Grades" class="text-danger"></span>
-            </div>
-            
             <button type="submit" class="btn btn-primary" style="width:150px;">Edit Student</button>
             <a asp-controller="Student" asp-action="Index" class="btn btn-secondary" style="width:150px;">Back to List</a>
         </div>

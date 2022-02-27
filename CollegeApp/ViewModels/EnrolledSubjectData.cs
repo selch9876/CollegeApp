@@ -9,8 +9,7 @@ namespace CollegeApp.ViewModels
         public string SubjectTitle { get; set; }
         public bool Enrolled { get; set; }
         public SelectList Subjects { set; get; }
-        [DisplayFormat(NullDisplayText = "No grade")]
-        [Range(0, 100)]
         public int Grade { get; set; }
+        public int GradeId { get; set; }
     }
 }

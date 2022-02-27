@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CollegeApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220225110443_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20220225182916_SecondMigration")]
+    partial class SecondMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -55,6 +55,10 @@ namespace CollegeApp.Migrations
 
                     b.HasKey("GradeId");
 
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("SubjectId");
+
                     b.ToTable("Grades");
                 });
 
@@ -77,8 +81,6 @@ namespace CollegeApp.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GradeId");
-
                     b.ToTable("Students");
                 });
 
@@ -92,9 +94,6 @@ namespace CollegeApp.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("GradeId")
-                        .HasColumnType("int");
-
                     b.Property<string>("SubjectTitle")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -102,8 +101,6 @@ namespace CollegeApp.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
-
-                    b.HasIndex("GradeId");
 
                     b.ToTable("Subjects");
                 });
@@ -152,11 +149,23 @@ namespace CollegeApp.Migrations
                     b.ToTable("StudentSubject");
                 });
 
-            modelBuilder.Entity("CollegeApp.Models.Student", b =>
+            modelBuilder.Entity("CollegeApp.Models.Grade", b =>
                 {
-                    b.HasOne("CollegeApp.Models.Grade", null)
-                        .WithMany("students")
-                        .HasForeignKey("GradeId");
+                    b.HasOne("CollegeApp.Models.Student", "Student")
+                        .WithMany("Grades")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CollegeApp.Models.Subject", "Subject")
+                        .WithMany("Grades")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Student");
+
+                    b.Navigation("Subject");
                 });
 
             modelBuilder.Entity("CollegeApp.Models.Subject", b =>
@@ -166,10 +175,6 @@ namespace CollegeApp.Migrations
                         .HasForeignKey("CourseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("CollegeApp.Models.Grade", null)
-                        .WithMany("subjects")
-                        .HasForeignKey("GradeId");
 
                     b.Navigation("Course");
                 });
@@ -203,15 +208,15 @@ namespace CollegeApp.Migrations
                     b.Navigation("subjects");
                 });
 
-            modelBuilder.Entity("CollegeApp.Models.Grade", b =>
+            modelBuilder.Entity("CollegeApp.Models.Student", b =>
                 {
-                    b.Navigation("students");
-
-                    b.Navigation("subjects");
+                    b.Navigation("Grades");
                 });
 
             modelBuilder.Entity("CollegeApp.Models.Subject", b =>
                 {
+                    b.Navigation("Grades");
+
                     b.Navigation("Teacher");
                 });
 #pragma warning restore 612, 618

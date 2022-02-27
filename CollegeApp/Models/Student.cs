@@ -12,7 +12,7 @@ namespace CollegeApp.Models
         public string StudentName { get; set; }
         public DateTime Birthday { get; set; }
         
-        public int? GradeId { get; set; }
+        
 
 
         //Relationships

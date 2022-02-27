@@ -21,21 +21,6 @@ namespace CollegeApp.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Grades",
-                columns: table => new
-                {
-                    GradeId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    StudentId = table.Column<int>(type: "int", nullable: false),
-                    SubjectId = table.Column<int>(type: "int", nullable: false),
-                    Value = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Grades", x => x.GradeId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Students",
                 columns: table => new
                 {
@@ -48,12 +33,6 @@ namespace CollegeApp.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Students", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Students_Grades_GradeId",
-                        column: x => x.GradeId,
-                        principalTable: "Grades",
-                        principalColumn: "GradeId",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -63,8 +42,7 @@ namespace CollegeApp.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SubjectTitle = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CourseId = table.Column<int>(type: "int", nullable: false),
-                    GradeId = table.Column<int>(type: "int", nullable: true)
+                    CourseId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -75,12 +53,33 @@ namespace CollegeApp.Migrations
                         principalTable: "Courses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Grades",
+                columns: table => new
+                {
+                    GradeId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StudentId = table.Column<int>(type: "int", nullable: false),
+                    SubjectId = table.Column<int>(type: "int", nullable: false),
+                    Value = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Grades", x => x.GradeId);
                     table.ForeignKey(
-                        name: "FK_Subjects_Grades_GradeId",
-                        column: x => x.GradeId,
-                        principalTable: "Grades",
-                        principalColumn: "GradeId",
-                        onDelete: ReferentialAction.Restrict);
+                        name: "FK_Grades_Students_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Students",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Grades_Subjects_SubjectId",
+                        column: x => x.SubjectId,
+                        principalTable: "Subjects",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -130,9 +129,14 @@ namespace CollegeApp.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Students_GradeId",
-                table: "Students",
-                column: "GradeId");
+                name: "IX_Grades_StudentId",
+                table: "Grades",
+                column: "StudentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Grades_SubjectId",
+                table: "Grades",
+                column: "SubjectId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_StudentSubject_SubjectsId",
@@ -145,11 +149,6 @@ namespace CollegeApp.Migrations
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Subjects_GradeId",
-                table: "Subjects",
-                column: "GradeId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Teachers_SubjectID",
                 table: "Teachers",
                 column: "SubjectID",
@@ -159,6 +158,9 @@ namespace CollegeApp.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Grades");
+
             migrationBuilder.DropTable(
                 name: "StudentSubject");
 
@@ -173,9 +175,6 @@ namespace CollegeApp.Migrations
 
             migrationBuilder.DropTable(
                 name: "Courses");
-
-            migrationBuilder.DropTable(
-                name: "Grades");
         }
     }
 }

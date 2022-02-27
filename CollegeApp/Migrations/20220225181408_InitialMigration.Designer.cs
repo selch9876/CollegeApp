@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CollegeApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220225114104_Grade")]
-    partial class Grade
+    [Migration("20220225181408_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -54,6 +54,10 @@ namespace CollegeApp.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("GradeId");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("SubjectId");
 
                     b.ToTable("Grades");
                 });
@@ -130,36 +134,6 @@ namespace CollegeApp.Migrations
                     b.ToTable("Teachers");
                 });
 
-            modelBuilder.Entity("GradeStudent", b =>
-                {
-                    b.Property<int>("GradesGradeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("studentsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("GradesGradeId", "studentsId");
-
-                    b.HasIndex("studentsId");
-
-                    b.ToTable("GradeStudent");
-                });
-
-            modelBuilder.Entity("GradeSubject", b =>
-                {
-                    b.Property<int>("GradesGradeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("subjectsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("GradesGradeId", "subjectsId");
-
-                    b.HasIndex("subjectsId");
-
-                    b.ToTable("GradeSubject");
-                });
-
             modelBuilder.Entity("StudentSubject", b =>
                 {
                     b.Property<int>("StudentsId")
@@ -173,6 +147,25 @@ namespace CollegeApp.Migrations
                     b.HasIndex("SubjectsId");
 
                     b.ToTable("StudentSubject");
+                });
+
+            modelBuilder.Entity("CollegeApp.Models.Grade", b =>
+                {
+                    b.HasOne("CollegeApp.Models.Student", "Student")
+                        .WithMany("Grades")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CollegeApp.Models.Subject", "Subject")
+                        .WithMany("Grades")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Student");
+
+                    b.Navigation("Subject");
                 });
 
             modelBuilder.Entity("CollegeApp.Models.Subject", b =>
@@ -195,36 +188,6 @@ namespace CollegeApp.Migrations
                     b.Navigation("Subject");
                 });
 
-            modelBuilder.Entity("GradeStudent", b =>
-                {
-                    b.HasOne("CollegeApp.Models.Grade", null)
-                        .WithMany()
-                        .HasForeignKey("GradesGradeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CollegeApp.Models.Student", null)
-                        .WithMany()
-                        .HasForeignKey("studentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("GradeSubject", b =>
-                {
-                    b.HasOne("CollegeApp.Models.Grade", null)
-                        .WithMany()
-                        .HasForeignKey("GradesGradeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CollegeApp.Models.Subject", null)
-                        .WithMany()
-                        .HasForeignKey("subjectsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("StudentSubject", b =>
                 {
                     b.HasOne("CollegeApp.Models.Student", null)
@@ -245,8 +208,15 @@ namespace CollegeApp.Migrations
                     b.Navigation("subjects");
                 });
 
+            modelBuilder.Entity("CollegeApp.Models.Student", b =>
+                {
+                    b.Navigation("Grades");
+                });
+
             modelBuilder.Entity("CollegeApp.Models.Subject", b =>
                 {
+                    b.Navigation("Grades");
+
                     b.Navigation("Teacher");
                 });
 #pragma warning restore 612, 618

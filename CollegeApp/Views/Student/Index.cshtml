@@ -1,4 +1,4 @@
-﻿@model ContosoUniversity.ViewModels.StudentIndexData
+﻿@model CollegeApp.ViewModels.StudentIndexData
 
 @{
     ViewData["Title"] = "Students";
@@ -21,6 +21,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Subjects)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Grades)
+            </th>
            
            
             <th></th>
@@ -41,6 +44,16 @@
                         foreach (var subject in item.Subjects)
                         {
                             @subject.SubjectTitle <br />
+                            
+                        }
+                    }
+                </td>
+
+                <td>
+                    @{
+                        foreach (var obj in item.Grades)
+                        {
+                            @obj.Value <br />
                         }
                     }
                 </td>

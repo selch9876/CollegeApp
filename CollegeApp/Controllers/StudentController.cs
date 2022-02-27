@@ -1,10 +1,10 @@
 ﻿using CollegeApp.Data;
 using CollegeApp.Models;
 using CollegeApp.ViewModels;
-using ContosoUniversity.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace CollegeApp.Controllers
 {
@@ -17,15 +17,8 @@ namespace CollegeApp.Controllers
             _db = db;
         }
 
-
-        public async Task<IActionResult> Index(int? id, int? SubjectId)
+        public async Task<IActionResult> Index(int? id, int? SubjectId, int? gradeID)
         {
-           /* var students = _db.Students
-                .Include(c => c.Subjects)
-                .Include(g => g.Grades)
-                .AsNoTracking();
-            return View(await students.ToListAsync()); */
-
             var viewModel = new StudentIndexData();
             viewModel.Students = _db.Students
                 .Include(i => i.Subjects)
@@ -35,15 +28,13 @@ namespace CollegeApp.Controllers
             if (id != null)
             {
                 ViewBag.StudentID = id.Value;
-                viewModel.Subjects = viewModel.Students.Where(
-                    i => i.Id == id.Value).Single().Subjects;
+                viewModel.Subjects = viewModel.Students.Single(i => i.Id == id.Value).Subjects;
             }
 
             if (SubjectId != null)
             {
                 ViewBag.SubjectID = SubjectId.Value;
-                viewModel.Grades = viewModel.Subjects.Where(
-                    x => x.Id == SubjectId).Single().Grades;
+                viewModel.Grades = viewModel.Subjects.Single(x => x.Id == SubjectId.Value).Grades;
             }
 
             return View(viewModel);
@@ -58,7 +49,7 @@ namespace CollegeApp.Controllers
 
             var student = await _db.Students
                 .Include(s => s.Subjects)
-                .Include(s => s.Grades)
+                .ThenInclude(g => g.Grades)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
 
@@ -73,17 +64,30 @@ namespace CollegeApp.Controllers
         //GET
         public IActionResult Create()
         {
-            PopulateSubjectsDropDownList();
+            var student = new Student();
+            student.Subjects = new List<Subject>();
+            PopulateEnrolledSubjectData(student);
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(
-         Student obj)
+         Student obj, string[] selectedSubjects)
         {
             try
             {
+                if (selectedSubjects != null)
+                {
+                    obj.Subjects = new List<Subject>();
+                    foreach (var subject in selectedSubjects)
+                    {
+                        var subjectToAdd = _db.Subjects.Find(int.Parse(subject));
+                        obj.Subjects.Add(subjectToAdd);
+                    }
+                }
+
+
                 if (ModelState.IsValid)
                 {
                     _db.Add(obj);
@@ -97,6 +101,7 @@ namespace CollegeApp.Controllers
                 ModelState.AddModelError("", "Unable to save changes. " +
                     "A student has already been assigned. ");
             }
+
             PopulateSubjectsDropDownList(obj.Subjects);
             return View(obj);
         }
@@ -118,6 +123,8 @@ namespace CollegeApp.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
                  PopulateEnrolledSubjectData(student);
 
+           
+
             if (student == null)
             {
                 return NotFound();
@@ -130,43 +137,62 @@ namespace CollegeApp.Controllers
         {
             var allSubjects = _db.Subjects;
             var studentSubjects = new HashSet<int>(student.Subjects.Select(c => c.Id));
+            //var studentGrades = _db.Grades;     
             var viewModel = new List<EnrolledSubjectData>();
             foreach (var subject in allSubjects)
             {
+                var studentGrade = _db.Grades
+                    .Where(g => g.StudentId == student.Id && g.SubjectId == subject.Id)
+                    .Select(g => g.Value).SingleOrDefault()
+                    ;
+                var studentGradeId = _db.Grades
+                    .Where(g => g.StudentId == student.Id && g.SubjectId == subject.Id)
+                    .Select(g => g.GradeId).SingleOrDefault()
+                    ;
+
                 viewModel.Add(new EnrolledSubjectData
                 {
                     SubjectID = subject.Id,
                     SubjectTitle = subject.SubjectTitle, 
-                    Enrolled = studentSubjects.Contains(subject.Id)
+                    Enrolled = studentSubjects.Contains(subject.Id),
+                    Grade = studentGrade,
+                    GradeId = student.Id
                 });
             }
+
+
+            
+
             ViewBag.Subjects = viewModel;
         }
 
         //POST
         [HttpPost, ActionName("Edit")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditPost(int? id, string[] selectedSubjects)
+        public async Task<IActionResult> EditPost(int? id, string[] selectedSubjects, int? gradeId, int? selectedGrade)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
+            var grade = _db.Grades.Find(gradeId);
+
             var studentToUpdate = await _db.Students
                 .Include(i => i.Subjects)
-                .Include(g=>g.Grades)
+                .Include(g => g.Grades)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
 
             if (await TryUpdateModelAsync<Student>(studentToUpdate,
                    "",
-                   c => c.StudentName, c => c.Birthday, c =>c.Subjects, c=>c.Grades))
+                   c => c.StudentName, c => c.Birthday, c => c.Subjects, c => c.Grades))
             {
 
                 try
                 {
                     UpdateStudentSubjects(selectedSubjects, studentToUpdate);
+                    
                     await _db.SaveChangesAsync();
                 }
                 catch (DbUpdateException /* ex */)
@@ -190,16 +216,22 @@ namespace CollegeApp.Controllers
                 return;
             }
 
+            
             var selectedSubjectsHS = new HashSet<string>(selectedSubjects);
-            var studentSubjects = new HashSet<int>
-                (studentToUpdate.Subjects.Select(c => c.Id));
+            var studentSubjects = new HashSet<int>(studentToUpdate.Subjects.Select(c => c.Id));
+            
+
             foreach (var subject in _db.Subjects)
             {
+                
                 if (selectedSubjectsHS.Contains(subject.Id.ToString()))
                 {
                     if (!studentSubjects.Contains(subject.Id))
                     {
                         studentToUpdate.Subjects.Add(subject);
+                        
+                            _db.SaveChanges();
+
                     }
                 }
                 else
@@ -209,13 +241,14 @@ namespace CollegeApp.Controllers
                         studentToUpdate.Subjects.Remove(subject);
                     }
                 }
+
             }
+
         }
 
-
-
-        //GET
-        public IActionResult Delete(int? id)
+        
+            //GET
+            public IActionResult Delete(int? id)
         {
             if (id == null || id == 0)
             {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using CollegeApp.Models;
 
-namespace ContosoUniversity.ViewModels
+namespace CollegeApp.ViewModels
 {
     public class StudentIndexData
     {
