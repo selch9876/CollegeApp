@@ -129,7 +129,7 @@ namespace CollegeApp.Controllers
             {
                 return NotFound();
             }
-            //PopulateSubjectsDropDownList(student.Subjects);
+            
             return View(student);
         }
 
@@ -137,7 +137,6 @@ namespace CollegeApp.Controllers
         {
             var allSubjects = _db.Subjects;
             var studentSubjects = new HashSet<int>(student.Subjects.Select(c => c.Id));
-            //var studentGrades = _db.Grades;     
             var viewModel = new List<EnrolledSubjectData>();
             foreach (var subject in allSubjects)
             {
